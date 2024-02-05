@@ -5,7 +5,7 @@ For VGG,Vit and resnet folder, to use the pretrained checkpoints from the CSR re
 
 Make sure to extract to root of VGG,Vit and resnet folder
 
-If you are creating a conda environment using environment.yml,Please use:
+If you are creating a conda environment using environment.yml, please use:
 
 conda env create --file environment.yml --name csr
 
