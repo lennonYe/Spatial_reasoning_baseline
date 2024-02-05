@@ -7,6 +7,6 @@ Make sure to extract to root of VGG,Vit and resnet folder
 
 If you are creating a conda environment using environment.yml,Please use:
 
-      conda env create --file environment.yml --name csr
+conda env create --file environment.yml --name csr
 
 You will also need to download Detectron2 separately by following their [guide](https://detectron2.readthedocs.io/en/latest/tutorials/install.html#build-detectron2-from-source).
