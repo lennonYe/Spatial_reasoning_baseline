@@ -1,18 +1,19 @@
 from ablation import ablation
-from createDataset import createDataset
+# from createDataset import createDataset
 import argparse
 import os
 import yaml
 import gc
 import time
 import subprocess
-from ransac import SIFT_RANSAC
+# from ransac import SIFT_RANSAC
 from pytorch_lightning import seed_everything
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', '--skip', action='store_true', help="skip feature generation")
 parser.add_argument('-p', '--path', type=str, help="dataset directory")
 parser.add_argument('--seed', type=int, default=0, help='random seed (default: 0)')
+
 
 args = parser.parse_args()
 SEED = args.seed
@@ -89,21 +90,21 @@ if __name__ == "__main__":
     # gc.collect()
 
 
-    """DEBUG"""
-    configs = [{
-        'lr': 1e-4,
-        'batch_size': 64,
-        'backbone_str': 'vgg',
-        'class_balanced': True,
-        'with_attention': False,
-        'concat_csr': False
-    }]
-    print("\n\n==============Running ablation study==============")
-    # For each configuration, run the ablation study on the deep learning methods
-    start = time.time()
-    ablation(configs, SEED, data_dir)
-    end = time.time()
-    print(f'Ablation took {(end - start) / 60:.0f} minutes and {(end - start) % 60:.0f} seconds')
+    # """DEBUG"""
+    # configs = [{
+    #     'lr': 1e-4,
+    #     'batch_size': 64,
+    #     'backbone_str': 'vgg',
+    #     'class_balanced': True,
+    #     'with_attention': False,
+    #     'concat_csr': False
+    # }]
+    # print("\n\n==============Running ablation study==============")
+    # # For each configuration, run the ablation study on the deep learning methods
+    # start = time.time()
+    # ablation(configs, SEED, data_dir)
+    # end = time.time()
+    # print(f'Ablation took {(end - start) / 60:.0f} minutes and {(end - start) % 60:.0f} seconds')
     gc.collect()
     configs = [{
         'lr': 1e-4,

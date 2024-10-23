@@ -11,12 +11,12 @@ import src.dataloaders.augmentations as A
 from torchvision.transforms.transforms import ToTensor
 from src.models.backbones import FeatureLearner, FeedForward
 import itertools
-from get_boxes import get_boxes
+# from get_boxes import get_boxes
 import timm
 import numpy as np
 import torch.nn.functional as F
 from torch import Tensor
-from src.lightning.modules.moco2_module_old import MocoV2
+# from src.lightning.modules.moco2_module_old import MocoV2
 from PIL import Image, ImageDraw
 
 class PositionalEncoding(pl.LightningModule):
@@ -179,149 +179,149 @@ class ResNetModule(pl.LightningModule):
 
         return features1, features2
 
-class CSRModule(pl.LightningModule):
-    def __init__(self):
-        super().__init__()
+# class CSRModule(pl.LightningModule):
+#     def __init__(self):
+#         super().__init__()
         
-        self.encoder = MocoV2.load_from_checkpoint('checkpoints/csr_scene.ckpt').to('cuda')
+#         self.encoder = MocoV2.load_from_checkpoint('checkpoints/csr_scene.ckpt').to('cuda')
 
-        for param in self.encoder.parameters():
-                param.requires_grad = False
+#         for param in self.encoder.parameters():
+#                 param.requires_grad = False
 
-    def forward(self, img1, img2, imgName1, imgName2, path):
-        self.encoder.eval()
-        #feature1, feature2 = get_csr_features(self.encoder, img1, img2, imgName1, imgName2, path = None)
-        feature1, feature2 = get_csr_features(self.encoder, img1, img2, imgName1, imgName2, path)
-        return feature1, feature2
+#     def forward(self, img1, img2, imgName1, imgName2, path):
+#         self.encoder.eval()
+#         #feature1, feature2 = get_csr_features(self.encoder, img1, img2, imgName1, imgName2, path = None)
+#         feature1, feature2 = get_csr_features(self.encoder, img1, img2, imgName1, imgName2, path)
+#         return feature1, feature2
 
 
-def create_batch(keys, boxes, im):
-    mask_1 = torch.zeros((len(keys), 1, 224, 224))
-    mask_2 = torch.zeros((len(keys), 1, 224, 224))
-    image = torch.zeros((len(keys), 3, 224, 224))
-    t = ToTensor()
-    tensor_image = t(im)
-    for i, k in enumerate(keys):
-        mask_1[i] = boxes[k[0]]
-        mask_2[i] = boxes[k[1]]
-        image[i] = torch.clone(tensor_image)
+# def create_batch(keys, boxes, im):
+#     mask_1 = torch.zeros((len(keys), 1, 224, 224))
+#     mask_2 = torch.zeros((len(keys), 1, 224, 224))
+#     image = torch.zeros((len(keys), 3, 224, 224))
+#     t = ToTensor()
+#     tensor_image = t(im)
+#     for i, k in enumerate(keys):
+#         mask_1[i] = boxes[k[0]]
+#         mask_2[i] = boxes[k[1]]
+#         image[i] = torch.clone(tensor_image)
 
-    return {'mask_1': mask_1, 'mask_2': mask_2, 'image': image}
+#     return {'mask_1': mask_1, 'mask_2': mask_2, 'image': image}
 
-def get_max_boxes(path):
+# def get_max_boxes(path):
 
-    filepath = os.path.join(path, 'boxes')
-    # print('Determining maximum number of objects')
-    # print(f'Path: {filepath}')
-    max_num_obj = 0
-    for filename in os.listdir(filepath):
-        with open(filepath+'/'+filename) as f:
-            boxes = json.load(f)
-        if len(boxes) > max_num_obj:
-            max_num_obj = len(boxes)
-    # print(f'Maximum number of objects: {max_num_obj}')
-    max_num_obj = max_num_obj ** 2
-    return max_num_obj
+#     filepath = os.path.join(path, 'boxes')
+#     # print('Determining maximum number of objects')
+#     # print(f'Path: {filepath}')
+#     max_num_obj = 0
+#     for filename in os.listdir(filepath):
+#         with open(filepath+'/'+filename) as f:
+#             boxes = json.load(f)
+#         if len(boxes) > max_num_obj:
+#             max_num_obj = len(boxes)
+#     # print(f'Maximum number of objects: {max_num_obj}')
+#     max_num_obj = max_num_obj ** 2
+#     return max_num_obj
 
-def get_boxes(corners):
-    boxes = {}
-    # If there are no detected objects (e.g. 5.jpg in Training set)
-    if len(corners) == 0:
-        box = Image.new('L', (224, 224))
-        tmp = ImageDraw.Draw(box)
-        tmp.rectangle([(0, 0), (0, 0)], fill="white")
-        trans = T.ToTensor()
-        boxes[0] = trans(box)
-        return boxes
+# def get_boxes(corners):
+#     boxes = {}
+#     # If there are no detected objects (e.g. 5.jpg in Training set)
+#     if len(corners) == 0:
+#         box = Image.new('L', (224, 224))
+#         tmp = ImageDraw.Draw(box)
+#         tmp.rectangle([(0, 0), (0, 0)], fill="white")
+#         trans = T.ToTensor()
+#         boxes[0] = trans(box)
+#         return boxes
 
-    for key in corners.keys():
-        top = tuple(corners[str(key)]['top'])
-        bottom = tuple(corners[str(key)]['bottom'])
+#     for key in corners.keys():
+#         top = tuple(corners[str(key)]['top'])
+#         bottom = tuple(corners[str(key)]['bottom'])
 
-        # Convert str in tuples to integers
-        top = tuple(map(float, top))
-        bottom = tuple(map(float, bottom))
+#         # Convert str in tuples to integers
+#         top = tuple(map(float, top))
+#         bottom = tuple(map(float, bottom))
 
-        box = Image.new('L', (224, 224))
-        tmp = ImageDraw.Draw(box)
-        tmp.rectangle([top, bottom], fill="white")
-        trans = T.ToTensor()
-        boxes[key] = trans(box)
+#         box = Image.new('L', (224, 224))
+#         tmp = ImageDraw.Draw(box)
+#         tmp.rectangle([top, bottom], fill="white")
+#         trans = T.ToTensor()
+#         boxes[key] = trans(box)
 
-    return boxes
-def get_csr_features(model, img1, img2, imgName1, imgName2, path = None):
+#     return boxes
+# def get_csr_features(model, img1, img2, imgName1, imgName2, path = None):
     
-    assert path != None , "Path can not be none in CSRModule"
-    batch_size = img1.shape[0]
-    q_features_list = []
-    k_features_list = []
-    #Generate csr features for batches
-    for i in range(batch_size):
-        if type(path) == str:
-            img1_single = img1
-            img2_single = img2
-            imgName1_single = ''.join(imgName1)
-            imgName2_single = ''.join(imgName2)
-            path_single = path
-        elif type(path) != str:
-            img1_single = img1[i]
-            img2_single = img2[i]
-            imgName1_single = imgName1[i]
-            imgName2_single = imgName2[i]
-            path_single = path[i]
-        max_num_obj = get_max_boxes(path_single)
-        boxes_dir = os.path.join(path_single, 'boxes')
+#     assert path != None , "Path can not be none in CSRModule"
+#     batch_size = img1.shape[0]
+#     q_features_list = []
+#     k_features_list = []
+#     #Generate csr features for batches
+#     for i in range(batch_size):
+#         if type(path) == str:
+#             img1_single = img1
+#             img2_single = img2
+#             imgName1_single = ''.join(imgName1)
+#             imgName2_single = ''.join(imgName2)
+#             path_single = path
+#         elif type(path) != str:
+#             img1_single = img1[i]
+#             img2_single = img2[i]
+#             imgName1_single = imgName1[i]
+#             imgName2_single = imgName2[i]
+#             path_single = path[i]
+#         max_num_obj = get_max_boxes(path_single)
+#         boxes_dir = os.path.join(path_single, 'boxes')
 
-        boxes_file1 = os.path.join(boxes_dir, imgName1_single.split('.', 1)[0]+'.json')
-        boxes_file2 = os.path.join(boxes_dir, imgName2_single.split('.', 1)[0]+'.json')
+#         boxes_file1 = os.path.join(boxes_dir, imgName1_single.split('.', 1)[0]+'.json')
+#         boxes_file2 = os.path.join(boxes_dir, imgName2_single.split('.', 1)[0]+'.json')
         
-        with open(boxes_file1) as f:
-            boxes1 = json.load(f)
+#         with open(boxes_file1) as f:
+#             boxes1 = json.load(f)
         
-        with open(boxes_file2) as f:
-            boxes2 = json.load(f)
+#         with open(boxes_file2) as f:
+#             boxes2 = json.load(f)
 
-        boxes1 = get_boxes(boxes1)
-        boxes2 = get_boxes(boxes2)
+#         boxes1 = get_boxes(boxes1)
+#         boxes2 = get_boxes(boxes2)
 
-        edge_pairings1 = list(itertools.permutations(boxes1.keys(), 2))
-        edge_pairings2 = list(itertools.permutations(boxes2.keys(), 2))
-        self_pairings1 = [(j, j) for j in boxes1]
-        self_pairings2 = [(j, j) for j in boxes2]
+#         edge_pairings1 = list(itertools.permutations(boxes1.keys(), 2))
+#         edge_pairings2 = list(itertools.permutations(boxes2.keys(), 2))
+#         self_pairings1 = [(j, j) for j in boxes1]
+#         self_pairings2 = [(j, j) for j in boxes2]
         
-        keys1 = self_pairings1 + edge_pairings1
-        keys2 = self_pairings2 + edge_pairings2
-        img1_create_batch = Image.open(os.path.join(path_single, imgName1_single))
-        img1_create_batch = img1_create_batch.resize((224, 224))
-        img2_create_batch = Image.open(os.path.join(path_single, imgName2_single))
-        img2_create_batch = img2_create_batch.resize((224, 224))
-        x1 = create_batch(keys1, boxes1, img1_create_batch)
-        x2 = create_batch(keys2, boxes2, img2_create_batch)
+#         keys1 = self_pairings1 + edge_pairings1
+#         keys2 = self_pairings2 + edge_pairings2
+#         img1_create_batch = Image.open(os.path.join(path_single, imgName1_single))
+#         img1_create_batch = img1_create_batch.resize((224, 224))
+#         img2_create_batch = Image.open(os.path.join(path_single, imgName2_single))
+#         img2_create_batch = img2_create_batch.resize((224, 224))
+#         x1 = create_batch(keys1, boxes1, img1_create_batch)
+#         x2 = create_batch(keys2, boxes2, img2_create_batch)
 
-        A.TestTransform(x1)
-        A.TestTransform(x2)
+#         A.TestTransform(x1)
+#         A.TestTransform(x2)
 
-        # bx5x224x224
-        x_instance1 = torch.cat((x1['image'], x1['mask_1'], x1['mask_2']), 1)
-        x_instance2 = torch.cat((x2['image'], x2['mask_1'], x2['mask_2']), 1)
+#         # bx5x224x224
+#         x_instance1 = torch.cat((x1['image'], x1['mask_1'], x1['mask_2']), 1)
+#         x_instance2 = torch.cat((x2['image'], x2['mask_1'], x2['mask_2']), 1)
 
-        # Reshape x_instance to be max_num_objx5x224x224 (maximum number of objects detected out of entire set)
-        while x_instance1.shape[0] < max_num_obj:
-            x_instance1 = torch.cat((x_instance1, x_instance1), dim=0)
-        x_instance1 = x_instance1[:max_num_obj]
-        x_instance1 = x_instance1.to('cuda')
+#         # Reshape x_instance to be max_num_objx5x224x224 (maximum number of objects detected out of entire set)
+#         while x_instance1.shape[0] < max_num_obj:
+#             x_instance1 = torch.cat((x_instance1, x_instance1), dim=0)
+#         x_instance1 = x_instance1[:max_num_obj]
+#         x_instance1 = x_instance1.to('cuda')
 
-        while x_instance2.shape[0] < max_num_obj:
-            x_instance2 = torch.cat((x_instance2, x_instance2), dim=0)
-        x_instance2 = x_instance2[:max_num_obj]
-        x_instance2 = x_instance2.to('BCEWithLogitsLoss()(y_hat, label)cuda')
+#         while x_instance2.shape[0] < max_num_obj:
+#             x_instance2 = torch.cat((x_instance2, x_instance2), dim=0)
+#         x_instance2 = x_instance2[:max_num_obj]
+#         x_instance2 = x_instance2.to('BCEWithLogitsLoss()(y_hat, label)cuda')
 
-        q_features, k_features = model(x_instance1, x_instance2, update_queue=False)
-        q_features = torch.mean(q_features, dim=0)
-        k_features = torch.mean(k_features, dim=0)
-        q_features_list.append(q_features)
-        k_features_list.append(k_features)
-    q_features_batch = torch.stack(q_features_list, dim=0)
-    k_features_batch = torch.stack(k_features_list, dim=0)
+#         q_features, k_features = model(x_instance1, x_instance2, update_queue=False)
+#         q_features = torch.mean(q_features, dim=0)
+#         k_features = torch.mean(k_features, dim=0)
+#         q_features_list.append(q_features)
+#         k_features_list.append(k_features)
+#     q_features_batch = torch.stack(q_features_list, dim=0)
+#     k_features_batch = torch.stack(k_features_list, dim=0)
 
-    return q_features_batch, k_features_batch
+#     return q_features_batch, k_features_batch

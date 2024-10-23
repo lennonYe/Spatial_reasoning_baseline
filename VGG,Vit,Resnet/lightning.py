@@ -22,8 +22,8 @@ from tqdm import tqdm
 #import src.dataloaders.augmentations as A
 from PIL import Image, ImageDraw
 from timm import create_model
-import get_boxes
-from modules import ViTModule, AttentionModule, VGGModule,ResNetModule,CSRModule
+# import get_boxes
+from modules import ViTModule, AttentionModule, VGGModule,ResNetModule
 from pytorch_lightning import seed_everything
 
 def create_batch(keys, boxes, im):
@@ -51,34 +51,34 @@ def get_max_boxes(path):
     max_num_obj = max_num_obj ** 2
     return max_num_obj
 
-def get_features(model_name, model, img, img_name, path = None, encoded_type = None):
-    max_num_obj = get_max_boxes(path)
-    if model_name == "csr":
-        # Load boxes
-        boxes_dir = os.path.join(path, 'boxes')
-        boxes_file = os.path.join(boxes_dir, img_name.split('.',1)[0]+'.json')
-        with open(boxes_file) as f:
-            boxes = json.load(f)  
-        boxes = get_boxes(boxes)
-        edge_pairings = list(itertools.permutations(boxes.keys(), 2))
-        self_pairings = [(j, j) for j in boxes]
-        keys = self_pairings + edge_pairings
-        x = create_batch(keys, boxes, img)
-        A.TestTransform(x)
-        # bx5x224x224
-        x_instance = torch.cat((x['image'], x['mask_1'], x['mask_2']), 1)
-        # Reshape x_instance to be max_num_objx5x224x224 (maximum number of objects detected out of entire set)
-        while x_instance.shape[0] < max_num_obj:
-            x_instance = torch.cat((x_instance,x_instance), dim=0)
-        x_instance = x_instance[:max_num_obj]
-        x_instance = x_instance.to('cuda')
-        q_features, k_features = model(x_instance, x_instance, update_queue=False)
+# def get_features(model_name, model, img, img_name, path = None, encoded_type = None):
+#     max_num_obj = get_max_boxes(path)
+#     if model_name == "csr":
+#         # Load boxes
+#         boxes_dir = os.path.join(path, 'boxes')
+#         boxes_file = os.path.join(boxes_dir, img_name.split('.',1)[0]+'.json')
+#         with open(boxes_file) as f:
+#             boxes = json.load(f)  
+#         boxes = get_boxes(boxes)
+#         edge_pairings = list(itertools.permutations(boxes.keys(), 2))
+#         self_pairings = [(j, j) for j in boxes]
+#         keys = self_pairings + edge_pairings
+#         x = create_batch(keys, boxes, img)
+#         A.TestTransform(x)
+#         # bx5x224x224
+#         x_instance = torch.cat((x['image'], x['mask_1'], x['mask_2']), 1)
+#         # Reshape x_instance to be max_num_objx5x224x224 (maximum number of objects detected out of entire set)
+#         while x_instance.shape[0] < max_num_obj:
+#             x_instance = torch.cat((x_instance,x_instance), dim=0)
+#         x_instance = x_instance[:max_num_obj]
+#         x_instance = x_instance.to('cuda')
+#         q_features, k_features = model(x_instance, x_instance, update_queue=False)
 
-        q_features = torch.mean(q_features, dim=0).squeeze(0).detach().cpu().numpy()
-        k_features = torch.mean(k_features, dim=0).squeeze(0).detach().cpu().numpy()
-        if encoded_type == "q":
-            return q_features
-        return k_features
+#         q_features = torch.mean(q_features, dim=0).squeeze(0).detach().cpu().numpy()
+#         k_features = torch.mean(k_features, dim=0).squeeze(0).detach().cpu().numpy()
+#         if encoded_type == "q":
+#             return q_features
+#         return k_features
             
 class ClassificationModel(pl.LightningModule):
     def __init__(self, train_dataset, val_dataset, lr=1e-4, batch_size=1, backbone_str='vit', class_balanced=False, with_attention=False, concat_csr=False, seed = 0):
@@ -144,8 +144,8 @@ class ClassificationModel(pl.LightningModule):
     def get_encoder(self, backbone_str):
         if backbone_str == 'vit':
             return ViTModule(pretrained=True)
-        elif backbone_str == 'csr':
-            return CSRModule()
+        # elif backbone_str == 'csr':
+        #     return CSRModule()
         elif backbone_str == 'vgg':
             return VGGModule(pretrained=True)
         elif backbone_str == 'resnet':

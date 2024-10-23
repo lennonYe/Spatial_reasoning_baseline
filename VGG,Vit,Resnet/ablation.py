@@ -11,7 +11,6 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.callbacks import ModelCheckpoint
 #from pytorch_lightning.loggers import WandbLogger
 from pytorch_lightning.plugins import DDPPlugin
-from omegaconf import OmegaConf
 from sklearn.model_selection import train_test_split
 from pytorch_lightning import seed_everything
 from NewLoader import AVDDataset, Subset
@@ -180,8 +179,8 @@ def ablation(configs, seed, data_dir):
     # )
     # train_scenes = ['./RayCastDataset/More_vis/Angiola','./RayCastDataset/More_vis/Albertville','./RayCastDataset/More_vis/Anaheim', './RayCastDataset/More_vis/Andover']
     # test_scenes = ['./RayCastDataset/More_vis/Adrian','./RayCastDataset/More_vis/Annawan']
-    train_scenes = ['./temp/More_vis/Applewold','./temp/More_vis/Goffs','./temp/More_vis/Mesic', './temp/More_vis/Sanctuary','./temp/More_vis/Silas']
-    test_scenes = ['./temp/More_vis/Anaheim']
+    train_scenes = ['./temp/More_vis/Adrian','./temp/More_vis/Albertville','./temp/More_vis/Annawan', './temp/More_vis/Beach']
+    test_scenes = ['./temp/More_vis/Cantwell']
     print("Train scenes are:",train_scenes)
     print("Test scenes are:",test_scenes)
     # Iterate through all the config files in the directory
