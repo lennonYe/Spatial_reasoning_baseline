@@ -6,7 +6,7 @@ import yaml
 import gc
 import time
 import subprocess
-from ransac import SIFT_RANSAC
+# from ransac import SIFT_RANSAC
 from pytorch_lightning import seed_everything
 
 parser = argparse.ArgumentParser()
