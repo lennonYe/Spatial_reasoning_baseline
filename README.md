@@ -74,13 +74,9 @@ python simCLR_kdtree.py
 
 ---
 
-## 📌 Notes
+## Notes
 
 - All scripts require manual modification of scene configurations before running.
 - Outputs and model checkpoints are saved to predefined directories.
 
 ---
-
-## 📬 Contact
-
-For questions or contributions, feel free to open an issue or submit a pull request.
