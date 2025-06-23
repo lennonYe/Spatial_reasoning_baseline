@@ -9,7 +9,7 @@ This repository provides baseline implementations for evaluating spatial reasoni
 To create a conda environment using the provided `environment.yml`:
 
 ```bash
-conda env create --file environment.yml --name csr
+conda env create --file environment.yml --name covision
 ```
 
 ---
