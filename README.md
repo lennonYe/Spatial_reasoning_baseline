@@ -1,10 +1,10 @@
-# 🧠 Baseline Code for Spatial Reasoning Project
+# Baseline Code for Spatial Reasoning Project
 
 This repository provides baseline implementations for evaluating spatial reasoning using various visual feature extraction and matching methods.
 
 ---
 
-## 📦 Environment Setup
+## Environment Setup
 
 To create a conda environment using the provided `environment.yml`:
 
@@ -14,9 +14,9 @@ conda env create --file environment.yml --name csr
 
 ---
 
-## 🚀 Running Baselines
+## Running Baselines
 
-### 🔹 NetVLAD
+### NetVLAD
 
 To run NetVLAD-based experiments:
 
@@ -30,7 +30,7 @@ python main.py
 
 ---
 
-### 🔹 SuperGlue & RANSAC
+### SuperGlue & RANSAC
 
 For keypoint-based matching using SuperGlue and RANSAC:
 
@@ -44,7 +44,7 @@ python ransac.py
 
 ---
 
-### 🔹 VGG / ViT / ResNet
+### VGG / ViT / ResNet
 
 To run baselines with different backbone networks:
 
@@ -59,7 +59,7 @@ python fullscript.py
 
 ---
 
-### 🔹 SimCLR (Contrastive Learning)
+### SimCLR (Contrastive Learning)
 
 To run the SimCLR-based contrastive learning baseline:
 
@@ -77,7 +77,7 @@ python simCLR_kdtree.py
 ## 📌 Notes
 
 - All scripts require manual modification of scene configurations before running.
-- Outputs and model checkpoints are saved to predefined directories (see in-code comments for details).
+- Outputs and model checkpoints are saved to predefined directories.
 
 ---
 
