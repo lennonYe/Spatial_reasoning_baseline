@@ -1,4 +1,3 @@
-````markdown
 # 🧠 Baseline Code for Spatial Reasoning Project
 
 This repository provides baseline implementations for evaluating spatial reasoning using various visual feature extraction and matching methods.
