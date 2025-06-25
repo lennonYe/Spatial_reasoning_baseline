@@ -1,6 +1,6 @@
 # Baseline Code for Covision Project
 
-This repository provides baseline implementations for evaluating spatial reasoning using various visual feature extraction and matching methods.
+This repository provides baseline implementations for evaluating Covision problem using various supervised learning methods, contrastive learning methods as well as visual feature extraction and matching methods.
 
 ---
 
