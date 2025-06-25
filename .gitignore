@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# VSCode / JetBrains IDEs (optional)
+.vscode/
+.idea/
