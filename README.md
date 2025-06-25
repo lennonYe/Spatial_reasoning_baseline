@@ -25,7 +25,7 @@ To run NetVLAD-based experiments:
 3. Run the script:
 
 ```bash
-python main.py
+python NetVlad/main.py
 ```
 
 ---
@@ -38,8 +38,8 @@ For keypoint-based matching using SuperGlue and RANSAC:
 - Run each script separately:
 
 ```bash
-python superglue.py
-python ransac.py
+python Superglue_RANSAC/superglue.py
+python Superglue_RANSAC/ransac.py
 ```
 
 ---
@@ -54,7 +54,7 @@ To run baselines with different backbone networks:
 4. Run the script:
 
 ```bash
-python fullscript.py
+python VGG_Vit_Resnet/fullscript.py
 ```
 
 ---
