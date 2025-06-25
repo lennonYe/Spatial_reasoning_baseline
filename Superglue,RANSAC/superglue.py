@@ -31,8 +31,10 @@ def visual_iou(thresholds, ious_list, auc):
     plt.close()
 
 scenes_dir = "temp/More_vis"
-# specific_scene = ['temp/More_vis/Goffs']
-specific_scene = ['temp/More_vis/Nemacolin-5',
+# Get all scene directories
+# all_scenes = os.listdir(scenes_dir)
+# or specify the scenes manually
+all_scenes = ['temp/More_vis/Nemacolin-5',
  'temp/More_vis/Eastville-1',
  'temp/More_vis/Stokes-1',
  'temp/More_vis/Ribera-3',
@@ -126,7 +128,7 @@ max_num_matches = 0
 gt_labels = {}
 
 # for scene_dir in glob.glob(os.path.join(scenes_dir, '*')):
-for scene_dir in specific_scene:
+for scene_dir in all_scenes:
     floor_dirs = glob.glob(os.path.join(scene_dir, '[0-9]*'))  # Match directories with numeric names
     for floor_dir in floor_dirs:
         groundtruth_file = os.path.join(floor_dir, 'saved_obs', 'GroundTruth.csv')
@@ -140,7 +142,7 @@ for scene_dir in specific_scene:
 
 max_num_matches = 0
 
-for scene_dir in specific_scene:
+for scene_dir in all_scenes:
     floor_dirs = glob.glob(os.path.join(scene_dir, '[0-9]*'))  # Match directories with numeric names
     for floor_dir in floor_dirs:
         saved_obs_dir = os.path.join(floor_dir, 'saved_obs')
@@ -175,7 +177,7 @@ for threshold_percent in thresholds:
     # Load predicted number of matches again
     
     # for scene_dir in glob.glob(os.path.join(scenes_dir, '*')):
-    for scene_dir in specific_scene:
+    for scene_dir in all_scenes:
         floor_dirs = glob.glob(os.path.join(scene_dir, '[0-9]*'))  # Match directories with numeric names
         for floor_dir in floor_dirs:
             npz_dir = os.path.join(floor_dir, 'npz_result')

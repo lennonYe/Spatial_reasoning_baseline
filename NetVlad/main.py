@@ -17,34 +17,8 @@ from tqdm import tqdm
 import os
 import pandas as pd
 import re
-################# First implementation using pretrained model #################
-# img = Image.open('./sample.jpg')
-# arr = np.array(img)
+import yaml
 
-# encoder_dim = 512
-# num_clusters = 64
-# encoder = models.vgg16(pretrained=True)
-# # capture only feature part and remove last relu and maxpool
-# layers = list(encoder.features.children())[:-2]
-
-# encoder = nn.Sequential(*layers)
-# model = nn.Module() 
-# model.add_module('encoder', encoder)
-
-# net_vlad = netvlad.NetVLAD(num_clusters=num_clusters, dim=encoder_dim)
-# model.add_module('pool', net_vlad)
-
-# checkpoint = torch.load('./vgg16_netvlad_checkpoint/checkpoints/checkpoint.pth.tar')
-
-# best_metric = checkpoint['best_score']
-# model.load_state_dict(checkpoint['state_dict'])
-# model = model.cuda()
-
-# print(model(arr))
-
-# print(sum([p.numel() for p in model.parameters() if p.requires_grad  == True]))
-
-################# Second implementation using pretrained model #################
 def calculateIOU(predictions, labels, threshold=0.5):
     """
     Calculate IOU using the predictions and labels
@@ -93,46 +67,25 @@ def create_labels(scene_names):
 
 def train(model, iterator, optimizer, criterion):
     epoch_loss = 0
-    epoch_acc = 0
 
     model.train()
     i = 0
 
     for (img1, img2, label) in iterator:
-
         img1 = img1.cuda()
         img2 = img2.cuda()
         label = label.cuda().long()
-        
         optimizer.zero_grad()
-
         y_pred = model(img1, img2)
-
-        # plt.subplot(1, 2, 1)
-        # plt.title("Label: {} with predicted: {}".format(label.cpu().numpy(), y_pred.detach().cpu().numpy()))
-        # plt.imshow(img1.squeeze(0).permute(2, 1, 0).cpu().numpy())
-        # plt.subplot(1, 2, 2)
-        # plt.imshow(img2.squeeze(0).permute(2, 1, 0).cpu().numpy())
-        # plt.savefig("./TrainedImages/sample_{}.jpg".format(i))
-        # plt.close()
-        
         loss = criterion(y_pred, label)
-
-        # acc = calculate_accuracy(y_pred, label)
-
         loss.backward()
-
         optimizer.step()
-
         epoch_loss += loss.item()
-        # epoch_acc += acc.item()
         i+=1
     return epoch_loss / len(iterator)
 
 def evaluate(model, iterator, criterion):
- 
     epoch_loss = 0
-    epoch_acc = 0
 
     y_pred_list = []
     label_list = []
@@ -144,20 +97,15 @@ def evaluate(model, iterator, criterion):
             img1 = img1.cuda()
             img2 = img2.cuda()
             label = label.cuda().long()
-            
             y_pred = model(img1, img2)
             y_pred_list.append(y_pred)
             label_list.append(label)
-            
             loss = criterion(y_pred, label)
-            # acc = calculate_accuracy(y_pred, label)
             epoch_loss += loss.item()
-            # epoch_acc += acc.item()
 
     return epoch_loss / len(iterator), y_pred_list, label_list
 
 def calculateAUC(model, dataloader,predictions,labels, class_balanced=False, concat_csr=False):
- 
     ious = []
     thresholds = np.arange(0, 1.05, 0.05)
     # pred, labels = getPredictions(model, dataloader, class_balanced=class_balanced, concat_csr=concat_csr)
@@ -172,41 +120,31 @@ def calculateAUC(model, dataloader,predictions,labels, class_balanced=False, con
     print(f'AUC: {auc}')
     return auc, ious
 
+def load_config(config_path='config_netvlad.yaml'):
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
+
 if __name__ == "__main__":
     # load the best model with PCA (trained by our SFRS)
     vlad = torch.hub.load('yxgeee/OpenIBL', 'vgg16_netvlad', pretrained=True)
-
-    # use GPU (optional)
     vlad = vlad.cuda()
-
+    config = load_config()
     model = EmbedModel(vlad).cuda()
 
     for param in vlad.parameters():
         param.requires_grad = True
+    # using random seed to divide train and test scenes
 
-    # main_dir = './datasets/realworld/training'
-    # label_dir = './datasets/realworld/training/training_csv.csv'
-    # test_dir = './datasets/realworld/testing'
-    # test_label_dir = './datasets/realworld/testing/testing_csv.csv'
-    # # Prepare datasets
-    # dataset = AVDDataset(
-    #     main_dir, 
-    #     label_dir
-    # )
-    # Split dataset into train and val
-    # train_idx, val_idx = train_test_split(
-    #     np.arange(len(dataset)), 
-    #     test_size=0.2, 
-    #     random_state=42,
-    #     shuffle=True,
-    #     stratify=dataset.targets
-    # )
+    # random.seed(config['random_seed'])
+    # all_scenes = glob.glob('./temp/More_vis/*')
+    # train_scenes = random.sample(all_scenes, int(len(all_scenes) * 0.8))
+    # test_scenes = list(set(all_scenes) - set(train_scenes))
 
+    # or modify the specific desired train scenes and test scenes for consistency
     train_scenes = ['./temp/More_vis/Applewold', './temp/More_vis/Goffs', './temp/More_vis/Mesic', './temp/More_vis/Sanctuary', './temp/More_vis/Silas']
     test_scenes =  ['./temp/More_vis/Anaheim']
 
-    # train_scenes = ['./temp_run3_succ_6-5-23-seed--3/More_vis/Angiola','./temp_run3_succ_6-5-23-seed--3/More_vis/Albertville','./temp_run3_succ_6-5-23-seed--3/More_vis/Ballou', './temp_run3_succ_6-5-23-seed--3/More_vis/Elmira']
-    # test_scenes = ['./temp_run3_succ_6-5-23-seed--3/More_vis/Angiola','./temp_run3_succ_6-5-23-seed--3/More_vis/Beach']
     print("Train scenes are:",train_scenes)
     print("Test scenes are",test_scenes)
 
@@ -215,11 +153,11 @@ if __name__ == "__main__":
             labels,
         )
 
-        # Split dataset into train and val
+    # Split dataset into train and val
     train_idx, val_idx = train_test_split(
             np.arange(len(dataset)), 
             test_size=0.2, 
-            random_state=42,
+            random_state=config['random_seed'],
             shuffle=True,
             stratify=dataset.targets
         )
@@ -231,12 +169,12 @@ if __name__ == "__main__":
     val_samples_per_class = val_dataset.class_samples
 
     train_criterion = Loss(loss_type="binary_cross_entropy", samples_per_class = train_samples_per_class, class_balanced=True)
-    
     val_criterion = Loss(loss_type="binary_cross_entropy", samples_per_class = val_samples_per_class, class_balanced=True)
 
-    optimizer = torch.optim.Adam(model.parameters(), lr=1e-4)
-    EPOCHS = 35
-    batch_size = 64
+    optimizer = torch.optim.Adam(model.parameters(), lr=config['learning_rate'])
+    EPOCHS = config['epochs']
+    batch_size = config['batch_size']
+
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
@@ -244,13 +182,11 @@ if __name__ == "__main__":
     train_acc_history = []
     train_loss_history = []
     bestValLoss = float('inf')
-    # Fill training code here
     for epoch in range(EPOCHS):
         trainEpochLoss = train(model, train_loader, optimizer, train_criterion)
         valEpochLoss, _, _ = evaluate(model, val_loader, val_criterion)
         if valEpochLoss<bestValLoss:
             bestValLoss = valEpochLoss
-            # torch.save(model, "best_model_vlad.pt".format(epoch)) ### saving the best model based on the validation loss
             torch.save(model.state_dict(), "best_model_vlad.pt")
         # print("At Epoch: {} Train Loss: {} Train Accuracy: {} Val Loss: {} Val Accuracy: {}".format(epoch, trainEpochLoss, valEpochLoss))
         print("At Epoch: {} Train Loss: {} Val Loss: {}".format(epoch, trainEpochLoss, valEpochLoss))
@@ -258,6 +194,7 @@ if __name__ == "__main__":
     model = EmbedModel(vlad).cuda()
     model.load_state_dict(torch.load("best_model_vlad.pt"))
     model.eval()  # set the model to evaluation mode
+
     ##### Testing #####
     test_labels = create_labels(test_scenes)
     test_dataset = AVDDataset(

@@ -1,0 +1,11 @@
+# config for vgg,vit and resnet,change the backbone_str for different base model,with_attention and concat_csr are set to be false
+epochs: 35
+learning_rate: 1e-4
+batch_size: 64
+backbone_str: vit
+class_balanced: true
+with_attention: false
+concat_csr: false
+
+
+  

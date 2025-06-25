@@ -8,6 +8,7 @@ import time
 import subprocess
 # from ransac import SIFT_RANSAC
 from pytorch_lightning import seed_everything
+import yaml
 
 parser = argparse.ArgumentParser()
 parser.add_argument('-s', '--skip', action='store_true', help="skip feature generation")
@@ -31,8 +32,14 @@ def create_dir(dir, clean=False):
     except Exception as e:
         raise e
 
+def load_config(config_path='config_vgg_vit_resnet.yaml'):
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
+
 if __name__ == "__main__":
     path = args.path
+    config = load_config()
 
     # if not args.skip:
         # print("\n\n==============Generating boxes and features==============")
@@ -60,77 +67,14 @@ if __name__ == "__main__":
 
     data_dir = './temp/More_vis/'
 
-    """# Create config directory
-    create_dir('configs/', clean=True)
-    
-    configs = []
-    print("\n\n==============Generating YAML files==============")
-    # For each combination of hyperparameters, generate a YAML file
-    for backbone in backbones:
-        for attention in with_attention:
-            for concat in concat_csr:
-                for balanced in class_balanced:
-                    print("Generating YAML file for %s, attention=%s, concat=%s, balanced=%s" % (backbone, attention, concat, balanced))
-                    # Create a dictionary for the YAML file
-                    config = {
-                        'seed': SEED,
-                        'lr': 1e-4,
-                        'batch_size': 64,
-                        'backbone_str': backbone,
-                        'class_balanced': balanced,
-                        'with_attention': attention,
-                        'concat_csr': concat
-                    }"""
-
-    #                 configs.append(config)
-
-    #                 # Create the YAML file
-    #                 """with open('configs/%s_att%s_csr%s_bal%s.yaml' % (backbone, attention, concat, balanced), 'w') as file:
-    #                     documents = yaml.dump(config, file)"""
-    # gc.collect()
-
-
-    # """DEBUG"""
-    # configs = [{
-    #     'lr': 1e-4,
-    #     'batch_size': 64,
-    #     'backbone_str': 'vgg',
-    #     'class_balanced': True,
-    #     'with_attention': False,
-    #     'concat_csr': False
-    # }]
-    # print("\n\n==============Running ablation study==============")
-    # # For each configuration, run the ablation study on the deep learning methods
-    # start = time.time()
-    # ablation(configs, SEED, data_dir)
-    # end = time.time()
-    # print(f'Ablation took {(end - start) / 60:.0f} minutes and {(end - start) % 60:.0f} seconds')
     gc.collect()
-    configs = [{
-        'lr': 1e-4,
-        'batch_size': 64,
-        'backbone_str': 'vit',
-        'class_balanced': True,
-        'with_attention': False,
-        'concat_csr': False
+    training_configs = [{
+        'lr': config['learning_rate'],
+        'batch_size': config['batch_size'],
+        'backbone_str': config['backbone_str'],
+        'class_balanced': config['class_balanced'],
+        'with_attention': config['with_attention'],
+        'concat_csr': config['concat_csr']
     }]
-    ablation(configs, SEED, data_dir)
+    ablation(training_configs, SEED, data_dir)
     gc.collect()
-    configs = [{
-        'lr': 1e-4,
-        'batch_size': 64,
-        'backbone_str': 'resnet',
-        'class_balanced': True,
-        'with_attention': False,
-        'concat_csr': False
-    }]
-    ablation(configs, SEED, data_dir)
-    gc.collect()
-    print("\n\n==============Running Feature Matching==============")
-    # Todo: implement SuperGlue and RANSAC (include vis; can use code from ablation.py for vis)
-    #Generate auc plot for superglue for both train and test set
-    # subprocess.run(["python", "superglue.py","--input_dataset", "test"])
-    # subprocess.run(["python", "superglue.py","--input_dataset", "train"])
-
-    # sift_ransac_instance = SIFT_RANSAC(path)
-    # sift_ransac_instance.run()

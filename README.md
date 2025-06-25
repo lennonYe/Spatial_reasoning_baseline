@@ -69,14 +69,17 @@ To run the SimCLR-based contrastive learning baseline:
 2. Run the script:
 
 ```bash
-python simCLR_kdtree.py
+python simCLR.py
 ```
 
----
+## 📄 Notes
 
-## Notes
+- Place the dataset in the project root directory and rename it to `temp`. The expected structure is:
 
-- All scripts require manual modification of scene configurations before running.
-- Outputs and model checkpoints are saved to predefined directories.
+  ```
+  ./temp/More_vis/{scene_name_1, scene_name_2, ...}
+  ```
 
----
+- **Scene configurations must be manually specified** before running the scripts. See the in-code comments for guidance. Alternatively, you may use the provided random-split version.
+
+- All output files and model checkpoints will be saved to predefined directories as specified in the scripts.

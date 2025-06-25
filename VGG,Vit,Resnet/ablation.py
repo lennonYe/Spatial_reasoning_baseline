@@ -18,6 +18,7 @@ import matplotlib.pyplot as plt
 from lightning import ClassificationModel
 from visLoader import VisAVDDataset
 import gc
+import yaml
 torch.cuda.empty_cache()
 gc.collect()
 
@@ -147,7 +148,13 @@ def create_labels(scene_names):
                 labels = pd.concat([labels, labels_df], ignore_index=True)
     return labels
 
+def load_config(config_path='config_vgg_vit_resnet.yaml'):
+    with open(config_path, 'r') as f:
+        config = yaml.safe_load(f)
+    return config
+
 def ablation(configs, seed, data_dir):
+    config = load_config()
     SEED=seed
     seed_everything(SEED, workers = True)
     num_gpu = torch.cuda.device_count()
@@ -177,10 +184,11 @@ def ablation(configs, seed, data_dir):
     #     random_state=SEED,
     #     shuffle=True
     # )
-    # train_scenes = ['./RayCastDataset/More_vis/Angiola','./RayCastDataset/More_vis/Albertville','./RayCastDataset/More_vis/Anaheim', './RayCastDataset/More_vis/Andover']
-    # test_scenes = ['./RayCastDataset/More_vis/Adrian','./RayCastDataset/More_vis/Annawan']
+
+    # specify train and test scenes manually for debugging here
     train_scenes = ['./temp/More_vis/Adrian','./temp/More_vis/Albertville','./temp/More_vis/Annawan', './temp/More_vis/Beach']
     test_scenes = ['./temp/More_vis/Cantwell']
+
     print("Train scenes are:",train_scenes)
     print("Test scenes are:",test_scenes)
     # Iterate through all the config files in the directory
@@ -234,7 +242,7 @@ def ablation(configs, seed, data_dir):
             save_top_k=1,
         )
 
-        trainer = Trainer(max_epochs=35, gpus=num_gpu, accelerator="ddp", callbacks=[checkpoint_callback], plugins=DDPPlugin(find_unused_parameters=True), amp_level='O2', precision=16)
+        trainer = Trainer(max_epochs=config['epochs'], gpus=num_gpu, accelerator="ddp", callbacks=[checkpoint_callback], plugins=DDPPlugin(find_unused_parameters=True), amp_level='O2', precision=16)
         # trainer = Trainer(max_epochs=20, gpus=num_gpu, callbacks=[checkpoint_callback])
         print("\nFitting")
         trainer.fit(model)

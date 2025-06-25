@@ -198,6 +198,7 @@ class SIFT_RANSAC:
         pathName = self.imgPath
         scenes_path = os.path.join(self.imgPath, 'More_vis')
         # all_scenes = os.listdir(scenes_path)
+        # modify the scenes to predict result here
         all_scenes = ['Nemacolin-5', 'Eastville-1', 'Stokes-1', 'Ribera-3', 'Applewold-3', 'Hometown-2', 'Eudora-5', 'Sanctuary-4', 'Dunmor-2', 'Pettigrew-4', 'Spencerville-4', 'Hainesburg-2', 'Kerrtown-3', 'Oyens-5', 'Monson-4', 'Roeville-4', 'Spotswood-2', 'Micanopy-3', 'Angiola-2', 'Nimmons-5', 'Silas-4', 'Anaheim-2', 'Mifflintown-2', 'Sumas-4', 'Oyens-1', 'Spencerville-1', 'Pettigrew-5', 'Convoy-4', 'Eagerville-2', 'Placida-1', 'Capistrano-5', 'Hometown-4', 'Superior-1', 'Mobridge-3', 'Avonia-4', 'Mesic-3', 'Stanleyville-1', 'Delton-5', 'Silas-5', 'Mosinee-1', 'Nuevo-4', 'Nimmons-1', 'Beach-3', 'Hominy-4', 'Ribera-4', 'Micanopy-2', 'Spotswood-4', 'Rosser-4', 'Andover-4', 'Delton-4', 'Albertville-4', 'Eagerville-4', 'Hambleton-4', 'Monson-5', 'Dryville-1', 'Pleasant-4', 'Crandon-5', 'Annawan-1', 'Parole-5', 'Hominy-3', 'Nimmons-2', 'Andover-3', 'Ballou-2', 'Rosser-3', 'Arkansaw-3', 'Cantwell-5', 'Hillsdale-2', 'Parole-1', 'Bolton-4', 'Denmark-2', 'Eagerville-5', 'Azusa-2', 'Ballou-4', 'Elmira-5', 'Swormville-1', 'Ballou-1', 'Shelbiana-4', 'Haxtun-5', 'Mosquito-5', 'Placida-4', 'Silas-1', 'Elmira-2', 'Sands-4', 'Sodaville-3', 'Sands-2', 'Shelbiana-3', 'Hainesburg-5']
          # Initialize the necessary variables for aggregation across scenes and floors
         iou_list = []
