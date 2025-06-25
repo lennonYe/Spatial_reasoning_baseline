@@ -1,4 +1,4 @@
-# Baseline Code for Spatial Reasoning Project
+# Baseline Code for Covision Project
 
 This repository provides baseline implementations for evaluating spatial reasoning using various visual feature extraction and matching methods.
 
@@ -63,16 +63,15 @@ python fullscript.py
 
 To run the SimCLR-based contrastive learning baseline:
 
-1. Modify `train_scenes` and `test_scenes` in both:
-   - `simCLR_kdtree.py`
-   - `custom_dataset.py`
+1. Modify `train_scenes` and `test_scenes` in:
+   - `simCLR.py`
 2. Run the script:
 
 ```bash
 python simCLR.py
 ```
 
-## 📄 Notes
+## Notes
 
 - Place the dataset in the project root directory and rename it to `temp`. The expected structure is:
 
